@@ -284,4 +284,8 @@ Edit `app/index.html`:
 - Each browser session generates a unique session_id
 - Tool calls are logged for debugging and auditing
 - The agent maintains conversation context within sessions
+<<<<<<< HEAD
 - API documentation is automatically generated at `/docs` endpoint
+=======
+- API documentation is automatically generated at `/docs` endpoint
+>>>>>>> 10bdc15a66d46fa6e13392b5ee9492665402c273

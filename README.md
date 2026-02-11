@@ -26,61 +26,70 @@ An AI-powered chat interface for managing library operations including book inve
 
 ## Project Structure
 ```
-.
-├── app/
-│   └── index.html          # Frontend chat interface
-├── server/
-│   ├── agent.py            # LangChain agent with tools
-│   ├── tools.py            # Database interaction 
-│   ├── models.py           # SQLAlchemy models
-│   ├── db.py               # Database configuration
-│   ├── main.py             # FastAPI application
-│   ├── config.py           # SQLAlchemy models
-│   ├── seed.py             # Database configuration
-│   └── schemas.py          # Pydantic schemas
-├── .env.example            # Environment variables template
-└── README.md
+LibraryDeskAgent/
+├── app/                  # Frontend application
+│   └── index.html        # Main entry point for the UI
+├── server/               # Backend logic (FastAPI)
+│   ├── agent.py          # AI Agent logic and decision making
+│   ├── config.py         # Configuration and environment variables loader
+│   ├── db.py             # Database connection and session management
+│   ├── main.py           # FastAPI application entry point
+│   ├── models.py         # SQLAlchemy/Database models
+│   ├── schemas.py        # Pydantic models for data validation
+│   ├── seed.py           # Script to populate the database with initial data
+│   └── tools.py          # Agent tools
+├── .env                  # Environment variables (secret)
+├── .env.example          # Template for environment variables
+├── .gitignore            # Files and folders to be ignored by Git
+├── library.db            # Local SQLite database file
+├── README.md             # Project documentation
+└── requirements.txt      # List of Python dependencies
 ```
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.9+
+- Python 3.10+
 - OpenAI API key
 
 ### Setup
 
 1. **Clone the repository**
 ```bash
-   git clone <repository-url>
-   cd library-desk-agent
+git clone https://github.com/Adel-Alhaj/LibraryDeskAgent
+cd LibraryDeskAgent
 ```
 
 2. **Create virtual environment**
 ```bash
-   python -m venv venv
-   venv\Scripts\activate
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
 ```
 
 3. **Install dependencies**
 ```bash
-   pip install fastapi uvicorn sqlalchemy aiosqlite langchain langchain-openai pydantic
+pip install -r requirements.txt
 ```
 
 4. **Set up environment variables**
 ```bash
-   cp .env.example .env
+cp .env.example .env
 ```
    
-   Edit `.env` and add your OpenAI API key:
+Edit `.env` and add your OpenAI API key:
 ```
-   OPENAI_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_api_key_here
 ```
 
 5. **Initialize database**
 ```bash
-   python serevr/seed.py
+python server/seed.py
 ```
 
 ## Running the Application
@@ -92,11 +101,13 @@ uvicorn server.main:app --reload --port 8000
 
 The API will be available at `http://localhost:8000`
 
+**To view API documentation:** Open `http://localhost:8000/docs` in your browser
+
+**To stop the server:** Press `Ctrl+C` in the terminal
+
 ### Start Frontend
 
-Simply open `app/index.html` in your web browser
-
-Then open `http://localhost:3000` in your browser
+Simply open `app/index.html` directly in your web browser (double-click the file)
 
 ## Usage Examples
 
@@ -155,6 +166,9 @@ Main chat endpoint for interacting with the agent.
 
 ### GET `/`
 Health check endpoint.
+
+### GET `/docs`
+Interactive API documentation (Swagger UI).
 
 ## Database Schema
 
@@ -240,26 +254,29 @@ Edit `app/index.html`:
 **Backend won't start:**
 - Check if port 8000 is available
 - Verify OpenAI API key is set in `.env`
-- Ensure all dependencies are installed
+- Ensure all dependencies are installed with `pip install -r requirements.txt`
+- Make sure virtual environment is activated
 
 **Frontend can't connect:**
 - Confirm backend is running on port 8000
-- Check browser console for CORS errors
-- Verify API_URL in `index.html` matches backend URL
+- Check browser console for CORS errors (F12 → Console tab)
+- Verify API_URL in `index.html` is set to `http://localhost:8000`
 
 **Database errors:**
-- Delete `library.db` and reinitialize
+- Delete `library.db` and re-run `python server/seed.py`
 - Check SQLite is properly installed
 - Verify database schema matches models
 
 **Agent not responding correctly:**
-- Check OpenAI API key is valid
-- Review agent logs in terminal (verbose=True)
+- Check OpenAI API key is valid and has credits
+- Review agent logs in terminal (verbose=True shows detailed execution)
 - Verify tool definitions match expected schemas
+- If agent hallucinates ISBNs, check that system prompt instructs it to search for books first
 
-## License
-
-This project is provided as-is for educational purposes.
+**Agent hallucinating book ISBNs:**
+- The agent must use `find_books` tool first before using any ISBN
+- Check system prompt includes instructions to look up books by title first
+- Never let the agent guess ISBN numbers
 
 ## Notes
 
@@ -267,3 +284,4 @@ This project is provided as-is for educational purposes.
 - Each browser session generates a unique session_id
 - Tool calls are logged for debugging and auditing
 - The agent maintains conversation context within sessions
+- API documentation is automatically generated at `/docs` endpoint
